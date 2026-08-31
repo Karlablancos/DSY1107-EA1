@@ -17,10 +17,11 @@ resource "aws_cognito_user_pool" "pool" {
 }
 
 resource "aws_cognito_user_pool_domain" "hosted_ui" {
-  domain               = "dsy1107-grupo10"
-  user_pool_id         = aws_cognito_user_pool.pool.id
+  domain                = "dsy1107-grupo10"
+  user_pool_id          = aws_cognito_user_pool.pool.id
   managed_login_version = 1
 }
+
 resource "aws_cognito_user_pool_client" "spa" {
   name                                 = "spa-react"
   user_pool_id                         = aws_cognito_user_pool.pool.id
@@ -28,9 +29,9 @@ resource "aws_cognito_user_pool_client" "spa" {
   allowed_oauth_flows_user_pool_client = true
   allowed_oauth_flows                  = ["code"]
   supported_identity_providers         = ["COGNITO"]
-  allowed_oauth_scopes                 = ["openid", "email", "profile"]
-  callback_urls                        = ["http://localhost:5173/"]
-  logout_urls                          = ["http://localhost:5173/"]
+  allowed_oauth_scopes                 = ["openid", "email", "profile", "aws.cognito.signin.user.admin"]
+  callback_urls                        = ["http://localhost:5173/", "https://main.d3a2wy9wnw07n7.amplifyapp.com/"]
+  logout_urls                          = ["http://localhost:5173/", "https://main.d3a2wy9wnw07n7.amplifyapp.com/"]
   explicit_auth_flows                  = ["ALLOW_USER_PASSWORD_AUTH", "ALLOW_REFRESH_TOKEN_AUTH"]
   access_token_validity                = 60
   id_token_validity                    = 60
