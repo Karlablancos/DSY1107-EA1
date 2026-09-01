@@ -21,11 +21,9 @@ locals {
 }
 
 output "amplify_app_id" {
-  description = "Lo necesita aws amplify create-deployment"
-  value       = aws_amplify_app.front.id
+  value = aws_amplify_app.front.id
 }
 
 output "amplify_url" {
-  description = "Va en callback_urls, logout_urls y CORS"
-  value       = local.url_amplify
+  value = local.url_amplify
 }
