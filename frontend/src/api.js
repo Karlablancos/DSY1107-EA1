@@ -38,18 +38,71 @@ export function obtenerUsuarioCognito() {
   )
 }
 
-export function obtenerIndicadores(conToken = true) {
+export function listarGastos() {
   return ejecutar(
-    conToken ? 'GET /datos con token' : 'GET /datos SIN token',
-    fetch(`${API_URL}/datos`, {
-      headers: conToken ? { Authorization: `Bearer ${getAccessToken()}` } : {},
+    'GET /gastos (con token)',
+    fetch(`${API_URL}/gastos`, {
+      headers: { Authorization: `Bearer ${getAccessToken()}` },
     })
   )
 }
 
-export function obtenerIndicadoresPublicos() {
+export function crearGasto(datos) {
   return ejecutar(
-    'GET /publico/datos (ruta sin proteger)',
-    fetch(`${API_URL}/publico/datos`)
+    'POST /gastos',
+    fetch(`${API_URL}/gastos`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${getAccessToken()}`,
+        'Content-Type': 'application/json',
+        'X-Usuario-Id': 'solicitante@muck.cl',
+      },
+      body: JSON.stringify(datos),
+    })
+  )
+}
+
+export function actualizarGasto(id, datos) {
+  return ejecutar(
+    `PUT /gastos/${id}`,
+    fetch(`${API_URL}/gastos/${id}`, {
+      method: 'PUT',
+      headers: {
+        Authorization: `Bearer ${getAccessToken()}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(datos),
+    })
+  )
+}
+
+export function resolverGasto(id, resolucion) {
+  return ejecutar(
+    `PATCH /gastos/${id}/resolucion`,
+    fetch(`${API_URL}/gastos/${id}/resolucion`, {
+      method: 'PATCH',
+      headers: {
+        Authorization: `Bearer ${getAccessToken()}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(resolucion),
+    })
+  )
+}
+
+export function eliminarGasto(id) {
+  return ejecutar(
+    `DELETE /gastos/${id}`,
+    fetch(`${API_URL}/gastos/${id}`, {
+      method: 'DELETE',
+      headers: { Authorization: `Bearer ${getAccessToken()}` },
+    })
+  )
+}
+
+export function probarSinToken() {
+  return ejecutar(
+    'GET /gastos SIN token (debe dar 401)',
+    fetch(`${API_URL}/gastos`)
   )
 }
