@@ -62,3 +62,7 @@ output "env_frontend" {
     FE_API_URL=${aws_apigatewayv2_api.api.api_endpoint}
   EOT
 }
+output "integracion_id" {
+  description = "Id de la integración backend principal. Lo lee publicar-ecs.sh."
+  value       = aws_apigatewayv2_integration.backend.id
+}
