@@ -15,6 +15,22 @@ spring:
   flyway:
     enabled: true
 
+  # ---------------------------------------------------------------------------
+  # conexión a RabbitMQ
+  # En local apunta al contenedor de docker-compose.yml (guest/guest).
+  # En la nube los valores llegan por variables de entorno.
+  # ---------------------------------------------------------------------------
+  rabbitmq:
+    host: ${SPRING_RABBITMQ_HOST:localhost}
+    port: ${SPRING_RABBITMQ_PORT:5672}
+    username: ${SPRING_RABBITMQ_USERNAME:guest}
+    password: ${SPRING_RABBITMQ_PASSWORD:guest}
+    # Si un mensaje no llega a ninguna cola, Rabbit lo DEVUELVE en vez de
+    # botarlo en silencio. Las dos líneas van juntas.
+    publisher-returns: true
+    template:
+      mandatory: true
+
 server:
   port: 8080
   error:
@@ -35,3 +51,13 @@ management:
 logging:
   level:
     cl.duoc.dsy1107: DEBUG
+
+# -----------------------------------------------------------------------------
+# nombres de mensajería CENTRALIZADOS.
+# Ninguna clase Java escribe estos textos a mano: todas los leen desde aquí.
+# -----------------------------------------------------------------------------
+mensajeria:
+  exchange: gastos.exchange
+  routing-keys:
+    gasto-creado: gasto.creado
+    gasto-resuelto: gasto.resuelto

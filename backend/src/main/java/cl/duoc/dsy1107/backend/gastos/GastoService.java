@@ -1,5 +1,6 @@
 package cl.duoc.dsy1107.backend.gastos;
 
+import cl.duoc.dsy1107.backend.mensajeria.GastoEventPublisher; // NUEVO
 import org.springframework.stereotype.Service;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -9,9 +10,12 @@ import java.util.List;
 public class GastoService {
 
     private final GastoRepository repo;
+    private final GastoEventPublisher eventos; // NUEVO: productor de eventos
 
-    public GastoService(GastoRepository repo) {
+    // NUEVO: Spring inyecta también el publisher
+    public GastoService(GastoRepository repo, GastoEventPublisher eventos) {
         this.repo = repo;
+        this.eventos = eventos;
     }
 
     public List<Gasto> listar() {
@@ -27,7 +31,9 @@ public class GastoService {
             usuarioId,
             Instant.now()
         );
-        return repo.save(gasto);
+        Gasto guardado = repo.save(gasto);   // 1) primero se guarda en la BD
+        eventos.gastoCreado(guardado);       // 2) NUEVO: después se avisa por RabbitMQ
+        return guardado;
     }
 
     public Gasto actualizar(Long id, GastoActualizado datos) {
@@ -45,7 +51,7 @@ public class GastoService {
             .orElseThrow(() -> new GastoNoEncontradoException(id));
         gasto.setEstado(resolucion.estado());
         gasto.setComentario(resolucion.comentario());
-        repo.save(gasto);
+        eventos.gastoResuelto(repo.save(gasto)); // NUEVO: avisa que fue aprobado/rechazado
     }
 
     public void eliminar(Long id) {
