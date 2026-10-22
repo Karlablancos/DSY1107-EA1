@@ -1,0 +1,43 @@
+spring:
+  application:
+    name: notificaciones-ms
+
+  # Este microservicio NO expone API REST: solo escucha colas.
+  main:
+    web-application-type: none
+
+  rabbitmq:
+    host: ${SPRING_RABBITMQ_HOST:localhost}
+    port: ${SPRING_RABBITMQ_PORT:5672}
+    username: ${SPRING_RABBITMQ_USERNAME:guest}
+    password: ${SPRING_RABBITMQ_PASSWORD:guest}
+    listener:
+      simple:
+        # ACK MANUAL: el consumidor decide explícitamente basicAck / basicNack.
+        # Con AUTO (el valor por defecto), Spring confirmaría solo.
+        acknowledge-mode: manual
+        # Prefetch 1: RabbitMQ entrega de a UN mensaje por vez y espera
+        # su confirmación antes de mandar el siguiente (reparto justo).
+        prefetch: 1
+
+logging:
+  level:
+    cl.duoc.dsy1107: DEBUG
+
+# -----------------------------------------------------------------------------
+# Nombres de mensajería CENTRALIZADOS.
+# Ninguna clase Java escribe estos textos a mano: todas los leen desde aquí.
+# -----------------------------------------------------------------------------
+mensajeria:
+  # Exchange donde publica el backend (debe llamarse IGUAL que en el backend)
+  exchange: gastos.exchange
+
+  # Cola principal: recibe todos los eventos de gasto
+  cola: gastos.notificaciones.queue
+  # Patrón del binding (topic): "#" = cero o más palabras -> gasto.creado, gasto.resuelto...
+  binding-key: "gasto.#"
+
+  # Dead Letter: adonde van los mensajes rechazados sin requeue
+  dlx: gastos.dlx
+  dlq: gastos.notificaciones.dlq
+  dlq-routing-key: gastos.notificaciones.muerto
