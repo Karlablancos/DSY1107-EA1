@@ -1,0 +1,34 @@
+spring:
+  application:
+    name: rabbit-admin-ms
+
+  rabbitmq:
+    host: ${SPRING_RABBITMQ_HOST:localhost}
+    port: ${SPRING_RABBITMQ_PORT:5672}
+    username: ${SPRING_RABBITMQ_USERNAME:guest}
+    password: ${SPRING_RABBITMQ_PASSWORD:guest}
+
+server:
+  # 8080 es del backend. Este servicio usa otro puerto para poder
+  # correr los dos a la vez en la misma máquina.
+  port: 8082
+  error:
+    include-message: always
+
+logging:
+  level:
+    cl.duoc.dsy1107: DEBUG
+
+# -----------------------------------------------------------------------------
+# Reglas del administrador (centralizadas, no escritas en el código)
+# -----------------------------------------------------------------------------
+admin:
+  # Prefijo reservado por RabbitMQ: no se pueden crear exchanges ni colas "amq.*"
+  prefijo-reservado: "amq."
+  # Topología del sistema: el administrador NO permite eliminarla por error,
+  # porque el backend y notificaciones-ms dependen de ella.
+  protegidos:
+    - gastos.exchange
+    - gastos.dlx
+    - gastos.notificaciones.queue
+    - gastos.notificaciones.dlq
