@@ -96,7 +96,11 @@ resource "aws_ecs_task_definition" "backend" {
     environment = [
       { name = "SPRING_DATASOURCE_URL",      value = "jdbc:postgresql://${aws_db_instance.postgres.endpoint}/gastos?sslmode=require" },
       { name = "SPRING_DATASOURCE_USERNAME", value = "postgres" },
-      { name = "SPRING_DATASOURCE_PASSWORD", value = var.db_password }
+      { name = "SPRING_DATASOURCE_PASSWORD", value = var.db_password },
+      # NUEVO: RabbitMQ en la EC2 (rabbitmq.tf). IP privada: misma VPC y no cambia.
+      { name = "SPRING_RABBITMQ_HOST",       value = aws_instance.rabbitmq.private_ip },
+      { name = "SPRING_RABBITMQ_USERNAME",   value = var.rabbitmq_usuario },
+      { name = "SPRING_RABBITMQ_PASSWORD",   value = var.rabbitmq_password }
     ]
 
     portMappings = [{ containerPort = 8080 }]

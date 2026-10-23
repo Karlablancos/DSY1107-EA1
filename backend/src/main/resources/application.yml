@@ -47,6 +47,15 @@ management:
       show-details: never
       probes:
         enabled: false
+  # ---------------------------------------------------------------------------
+  # NUEVO: la salud del backend NO depende de RabbitMQ.
+  # Publicar eventos es "mejor esfuerzo": si el broker no está, el gasto igual
+  # se guarda y el error queda en el log. Marcar el backend como DOWN haría que
+  # ECS lo reiniciara en bucle (su health check consulta /actuator/health).
+  # ---------------------------------------------------------------------------
+  health:
+    rabbit:
+      enabled: false
 
 logging:
   level:
